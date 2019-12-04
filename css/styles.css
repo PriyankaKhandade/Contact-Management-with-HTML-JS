@@ -1,0 +1,38 @@
+div.wrapper {
+    margin: 15px;
+}
+
+div.row {
+    margin: 0px;
+}
+
+form.form , table.contacts-table{
+    border: 1px solid;
+    padding: 15px;
+    margin: 0px;
+}
+
+.form-lbl {
+    width: 120px;
+}
+
+table.contacts-table{
+    
+}
+tr {
+    transition: all .25s ease-in-out
+}
+
+tr:hover {
+    background-color: #EEE;
+    cursor: pointer
+}
+
+.invalid-feedback,
+.inactive-status {
+    color: red;
+}
+
+.active-status {
+    color: green;
+}
