@@ -1,8 +1,7 @@
 var rIndex;
 var table = document.getElementById("dataTable");
 
-
-// validates form inputs
+// check the empty input
 function validateInputs() {
     var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     var isValid = true,
@@ -28,7 +27,7 @@ function validateInputs() {
         document.getElementById("emailNotUniqErrorMsg").style.display = "none";
         isValid = false;
     } else {
-        if (!rIndex && !isUniqueValue(email, 3)) {
+        if(!rIndex && !isUniqueValue(email, 3)){
             document.getElementById("emailNotUniqErrorMsg").style.display = "block";
             isValid = false;
         } else {
@@ -41,7 +40,7 @@ function validateInputs() {
         document.getElementById("pnNotUniqlErrorMsg").style.display = "none";
         isValid = false;
     } else {
-        if (!rIndex && !isUniqueValue(phoneNumber, 4)) {
+        if(!rIndex && !isUniqueValue(phoneNumber, 4)){
             document.getElementById("pnNotUniqlErrorMsg").style.display = "block";
             isValid = false;
         } else {
@@ -52,19 +51,18 @@ function validateInputs() {
     return isValid;
 }
 
-//Check values are uniq or not
-function isUniqueValue(value, columnNumber) {
+function isUniqueValue(value, columnNumber){
     const tableLength = table.rows.length;
     for (let i = 1; i < tableLength; i++) {
-        if (table.rows[i].cells[columnNumber].innerHTML === value) {
+        if(table.rows[i].cells[columnNumber].innerHTML === value){
             return false;
         }
     }
     return true;
-
+    
 }
 
-// add Row to table
+// add Row
 function saveUser() {
     // get the table by id
     // create a new row and cells
@@ -93,18 +91,17 @@ function saveUser() {
 
             var div = document.createElement('div');
             div.innerHTML = `<span id="editBtn" title="Edit User" class="glyphicon glyphicon-pencil edit-btn">
-            </span> <span id="deleteBtn" title="Inactive User" class="glyphicon glyphicon-remove delete-btn" onclick="event.stopPropagation()"></span>`;
+            </span> <span id="deleteBtn" title="Inactive User" onclick="event.stopPropagation()" class="glyphicon glyphicon-remove delete-btn"></span>`;
             cell6.appendChild(div);
             // call the function to set the event to the new row
-            attachRowclickEvent(newRow.rowIndex);
-            attachClickEventToEdit(newRow.rowIndex);
-            attachClickEventToInactive(newRow.rowIndex);
+            attachRowclickEvent();
+            attachClickEventToEdit();
+            attachClickEventToInactive();
             resetAll();
         }
     }
 }
 
-// edit selected row and save
 function editHtmlTbleSelectedRow() {
     var fname = document.getElementById("fname").value,
         lname = document.getElementById("lname").value,
@@ -125,24 +122,33 @@ function editHtmlTbleSelectedRow() {
     }
 }
 
-function attachRowclickEvent(rowIndex) {
-    // attach the event listener
-    table.rows[rowIndex].addEventListener("click", function() {
-        // get the seected row
-        addValuesToForm(rowIndex);
-    });
+// add click event to each row
+function attachRowclickEvent() {
+    const tableLength = table.rows.length;
+    for (let i = 1; i < tableLength; i++) {
+        // attach the event listener
+        table.rows[i].addEventListener("click", function() {
+            // get the seected row
+            addValuesToForm(i);
+        });
+    }
 }
-
-function attachClickEventToEdit(rowIndex) {
+// add click event to each row edit icons
+function attachClickEventToEdit() {
     var btnList = document.getElementsByClassName('edit-btn');
-    // attach the event listener
-    btnList[rowIndex - 1].addEventListener("click", function() {
-        addValuesToForm(rowIndex - 1);
-    });
-}
+    // get the lenght of array defined above
+    var listLength = btnList.length;
 
-// add selected table row data to form for edit
-function addValuesToForm(rowindex) {
+    // run the for look for each element in the array
+    for (let i = 0; i < listLength; i++) {
+        // attach the event listener
+        btnList[i].addEventListener("click", function() {
+            addValuesToForm(i+1);
+        });
+    }
+}
+// add selected row details to form
+function addValuesToForm(rowindex){
     const tableRow = table.rows[rowindex];
     rIndex = tableRow.rowIndex;
     document.getElementById("id").value = tableRow.cells[0].innerHTML;
@@ -152,30 +158,37 @@ function addValuesToForm(rowindex) {
     document.getElementById("phoneNumber").value = tableRow.cells[4].innerHTML;
 }
 
-// Updates user status as inactive
-function attachClickEventToInactive(rowIndex) {
+// attach click event to each row cross icon to inactive the user
+function attachClickEventToInactive() {
     var btnList = document.getElementsByClassName('delete-btn');
-    btnList[rowIndex - 1].addEventListener("click", function() {
-        const tableRow = table.rows[rowIndex];
-        rIndex = tableRow.rowIndex;
-        tableRow.cells[5].innerHTML = "Inactive"
-        tableRow.cells[5].classList.remove('active-status');
-        tableRow.cells[5].classList.add('inactive-status');
-    });
+    var listLength = btnList.length;
+    for (let i = 0; i < listLength; i++) {
+        // attach the event listener
+        btnList[i].addEventListener("click", function() {
+            const tableRow = table.rows[i + 1];
+            rIndex = tableRow.rowIndex;
+            tableRow.cells[5].innerHTML = "Inactive"
+            tableRow.cells[5].classList.remove('active-status');
+            tableRow.cells[5].classList.add('inactive-status');
+        });
+    }
 }
 
-// delete selected row from table
+//delete selected row
 function deleteSelectedRow() {
-    if (rIndex > 0) {
+    if(rIndex > 0){
         document.getElementById("deleteErrorMsg").style.display = "none";
         table.deleteRow(rIndex);
+        attachRowclickEvent();
+        attachClickEventToEdit();
+        attachClickEventToInactive();
         resetAll();
-        rIndex = 0;
     } else {
         document.getElementById("deleteErrorMsg").style.display = "block";
     }
 }
 
+//reset form
 function resetAll() {
     // clear input text
     rIndex = 0;
@@ -187,8 +200,8 @@ function resetAll() {
     hideAllErrorMessages();
 }
 
-// hide all error messages
-function hideAllErrorMessages() {
+//hide all error messages
+function  hideAllErrorMessages() {
     var errorDivList = document.getElementsByClassName("invalid-feedback");
     const listLength = errorDivList.length
     for (let i = 0; i < listLength; i++) {
